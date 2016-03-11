@@ -1,3 +1,5 @@
+port = 80
+
 httphandler = function(c,payload)
     c:send("<html>\n<head>\n")
     c:send("<title>Hello World!</title>\n")
@@ -11,7 +13,7 @@ function setHttpHandler(h)
 end
 
 srv=net.createServer(net.TCP,180)
-srv:listen(80,function(c) 
+srv:listen(port,function(c) 
     c:on("receive",function(c,d)
         -- check whether the request was sent by putty or luatool 
         if d:sub(1,6) == string.char(255,251,31,255,251,32) or d:sub(1,5) == "file." then
