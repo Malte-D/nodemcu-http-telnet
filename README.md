@@ -28,7 +28,7 @@ Set an http handler, which responds with 'hello world':
 
 `setHttpHandler(function(c,p) c:send("hello world") end)`
 
-Upload a the file main.lua to the esp with ip 192.168.178.42:
+Upload the file main.lua to the esp with ip 192.168.178.42:
 
 `python luatool.py --ip 192.168.178.42:80 --src main.lua`
 
