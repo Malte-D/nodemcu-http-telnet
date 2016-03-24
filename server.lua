@@ -1,11 +1,7 @@
 port = 80
 
-httphandler = function(c,payload)
-    c:send("<html>\n<head>\n")
-    c:send("<title>Hello World!</title>\n")
-    c:send("</head>\n<body>\n")
-    c:send("<h1>Hello World!</h1>\n")
-    c:send("</body>\n</html>\n")
+httphandler = function(connection,payload)
+    connection:send("Hello World")
 end
 
 function setHttpHandler(h)
@@ -13,10 +9,11 @@ function setHttpHandler(h)
 end
 
 srv=net.createServer(net.TCP,180)
-srv:listen(port,function(c) 
+srv:listen(port,function(c)
     c:on("receive",function(c,d)
+        tmr.stop(6)
         -- check whether the request was sent by putty or luatool 
-        if d:sub(1,6) == string.char(255,251,31,255,251,32) or d:sub(1,5) == "file." then
+        if (d:sub(1,6) == string.char(255,251,31,255,251,32) or d:sub(1,5) == "file.") then
             -- switch to telnet service
             node.output(function(s)
                 if c ~= nil then c:send(s) end
@@ -33,10 +30,11 @@ srv:listen(port,function(c)
                 node.input(d)
             end
         else
+            c:on("sent", function(c) c:close() end)
             -- handle http request
             httphandler(c,d)
-            c:close()
         end
     end)
-    c:send("HTTP/1.1 200 OK\r\n\r\n")
+    -- luatool needs to receive a response before it sends anything
+    tmr.alarm(6,500,0,function() c:send("HTTP/1.1 200 OK\r\n\r\n") end )
 end)
